@@ -8,6 +8,7 @@ pytest = "*"
 pytest-bdd = "*"
 requests = "*"
 selenium = "*"
+pytest-html = "*"
 
 [dev-packages]
 jupyter = "*"
