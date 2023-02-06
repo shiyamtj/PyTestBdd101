@@ -1,30 +1,23 @@
-
 from pytest_bdd import scenarios, given, when, then, parsers
-
-from selenium.webdriver import Keys
-from selenium.webdriver.common.by import By
-
-from pages.duckduckgo_page import DuckDuckGoPage
-from pages.duckduckgo_result_page import DuckDuckGoResultPage
+from pages.Pages import Pages
 
 # Scenarios
-scenarios('../features/duckduckgoweb.feature')
+scenarios('../features/saucedemoweb.feature')
 
 
-@when(parsers.parse('the user searches for "{text}"'))
-@when(parsers.parse('the user searches for the phrase:\n"""{text}"""'))
-def search_phrase(browser, text):
-    search_page = DuckDuckGoPage(browser)
-    search_page.search(text)
+@given('the SauceDemo login page is displayed', target_fixture='web_browser')
+def web_browser(browser, config_wait_time, request):
+    pages = Pages(browser, config_wait_time)  # initializing all pages
+    request.pages = pages  # shared variable
+    request.pages.SauceDemoLoginPage.load()
 
-@then(parsers.parse('one of the results contains "{phrase}"'))
-def results_have_one(browser, phrase):
-    result_page = DuckDuckGoResultPage(browser)
-    assert result_page.link_div_count() > 0
-    assert result_page.phrase_result_count(phrase) > 0
 
-@then(parsers.parse('results are shown for "{phrase}"'))
-def search_results(browser, phrase):
-    result_page = DuckDuckGoResultPage(browser)
-    result_page.search_input_value()
+@when(parsers.parse('the user login with username as "{username}" and password as "{password}"'))
+def user_login_with_credentials(request, username, password):
+    request.pages.SauceDemoLoginPage.login(username, password)
 
+
+@then(parsers.parse('the user should able to see dashboard loaded'))
+def user_on_dashboard(request):
+    is_loaded = request.pages.SauceDemoDashboardPage.is_loaded()
+    assert is_loaded == True, 'Dashboard not loaded'
